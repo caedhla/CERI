@@ -2,7 +2,13 @@
 
 ##Reading in data
 ##first add new colum in excel (threshold score/IV)
-CERIData <-read.csv(.... , na.strings= (list...))
+install.packages("xlsx")
+library(xlsx)
+CERIData <-read.xlsx("SESYNCTrainingQuantitative.xlsx",
+    sheetIndex=1,
+    na.strings= c(""))
+
+
 str(CERIData) 
 as.factor(...levels...)
 rename?columns
