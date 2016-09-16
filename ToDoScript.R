@@ -45,7 +45,9 @@ SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="to be 
 SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="Not relevant"]<- "NA"
 SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="<NA>"]<- "NA"
 SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="N/A"]<- "NA"
-SelectCERIData_NA <- subset(SelectCERIData, 
+
+##subset out rows without NAs
+SelectCERIData_NA <- na.omit(SelectCERIData)
 ##nope
 
 #plot
@@ -54,5 +56,9 @@ CERIPlot1 <- ggplot(data = SelectCERIData,
     aes(x = Threshold.Score, 
       y = Participant.Score..1.4., color= NA..4))+
     geom_point()
+##exclude NAs from plot?
+
+
+
 
 ##errors
