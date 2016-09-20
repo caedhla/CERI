@@ -1,10 +1,10 @@
 #R script for CERI visualization
 
-##Reading in data
-##first add new colum in excel (threshold score/IV)
+#Reading in data
+#first add new colum in excel (threshold score/IV)
 install.packages("xlsx")
 library(xlsx)
-
+CERIData2 <- read.csv(file.choose(), header =T)
 CERIData2 <-read_excel("SESYNCTrainingQuantitative.xlsx",
     sheet=1,
     na= c("No threshold", "No indicator value",
@@ -15,6 +15,11 @@ install.packages("readxl")
 library(readxl)
 
 #column comparison
+# in order to compare data frames, the columns that we are comparing must have the same name. So I changed the name of the column in CERIData from "X2" to "Threshold.Score".
+colnames(CERIData)[27] <- "Threshold.Score"
+
+library(dplyr)
+anti_join(Threshold_Score_Col, CERIData2, by = "Threshold.Score")
 
 #machine 1
 library(dplyr)
