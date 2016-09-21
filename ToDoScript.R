@@ -37,27 +37,96 @@ rename?columns
 
 ##subset/group/filter/aggregate
 library(dplyr)
+
 #Threshold.score has: No threshold, No indicator value, No threshold or indicator value
 #Participant.Score..1.4. has: Score not yet assigned, to be assigned, Not relevant, <NA>, N/A
-SelectCERIData <- select(CERIData, NA..4, Threshold.Score, Participant.Score..1.4.)
-SELECTCERIDATA_NA <- 
+SelectCERIData <- select(CERIData2, Sector, Threshold.Score, Participant.Score..1.4.)
+
+
+
+
 #use in operator to find string and convert to NA
-SelectCERIData$Threshold.Score[CERIData$Threshold.Score== "No threshold"]<- "NA"
-SelectCERIData$Threshold.Score[CERIData$Threshold.Score== "No indicator value"]<- "NA"
-SelectCERIData$Threshold.Score[CERIData$Threshold.Score== "No threshold or indicator value"]<- "NA"
-SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="Score not yet assigned"]<- "NA"
-SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="to be assigned"]<- "NA"
-SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="Not relevant"]<- "NA"
-SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="<NA>"]<- "NA"
-SelectCERIData$Participant.Score..1.4.[CERIData$Participant.Score..1.4.=="N/A"]<- "NA"
-SelectCERIData_NA <- subset(SelectCERIData, 
-##nope
+SelectCERIData[SelectCERIData == "No indicator value"] <- NA
+SelectCERIData[SelectCERIData == "No threshold"] <- NA #for some reason this is not converting all the "No threshold"s. see row 62. 
+SelectCERIData[SelectCERIData == "No indicator value"] <- NA
+SelectCERIData[SelectCERIData == "No threshold or indicator value"]<- NA
+SelectCERIData[SelectCERIData == "Score not yet assigned"]<- NA
+SelectCERIData[SelectCERIData == "to be assigned"]<- NA
+SelectCERIData[SelectCERIData =="Not relevant"]<- NA
+SelectCERIData[SelectCERIData =="N/A"]<- NA
+SelectCERIData[SelectCERIData == ""] <- NA
+
+# to omit all rows with NA
+
+omit_NA <- na.omit(SelectCERIData)
 
 #plot
 library(ggplot2)
+
+#a plot of threshold scores vs. participant scores (still including NA values)
 CERIPlot1 <- ggplot(data = SelectCERIData, 
     aes(x = Threshold.Score, 
-      y = Participant.Score..1.4., color= NA..4))+
+      y = Participant.Score..1.4., color= Sector))+
     geom_point()
+# a plot of threshold scores vs. participant scores (omitting NA values)
+CERIPlot2 <- ggplot(data = omit_NA, 
+                    aes(x = Threshold.Score, 
+                        y = Participant.Score..1.4., 
+                        color = Sector)) +
+                        geom_point()
 
+#the problem with the above plots is that some of the data points overlap so not every point is visible.For example, in the omit_NA plot, there should be 42 points but only 11 are visible on the plot.
+
+#plot the mean of each sector for each column of the omit_NA df. 
+#To do this, the first step is to convert the factor variables to numeric.So far I haven't been successful with this.  
+
+num.threshold.score <- as.numeric(as.character(omit_NA$Threshold.Score))
+num.participant.score <- as.numeric(as.character(omit_NA$Participant.Score..1.4.))
+transmute(omit_NA, num.Threshold.Score = num.threshold.score, num.participant.score)
+
+#To create separate data frames for each sector
+Economy_df <- filter(omit_NA, Sector == "Economy")
+Energy_df <-filter(omit_NA, Sector == "Energy")
+Landuse_df <- filter(omit_NA, Sector == "Land Use/Land Cover")
+Naturalenv_df <- filter(omit_NA, Sector == "Natural Environment")
+People_df <- filter(omit_NA, Sector == "People")
+Trans_df <- filter(omit_NA, Sector == "Transportation")
+Water_df <- filter (omit_NA, Sector == "Water")
+
+#plots for each sector
+
+Economyplot <- ggplot(data = Economy_df, 
+                      aes(x = Threshold.Score, 
+                          y = Participant.Score..1.4.)) +
+                geom_point()
+
+Energyplot <- ggplot(data = Energy_df, 
+                    aes(x = Threshold.Score, 
+                        y = Participant.Score..1.4.)) +
+  geom_point()
+
+Landuseplot <- ggplot(data = Landuse_df, 
+                      aes(x = Threshold.Score, 
+                          y = Participant.Score..1.4.)) +
+  geom_point()
+
+Natenv_plot <- ggplot(data = Naturalenv_df, 
+                      aes(x = Threshold.Score, 
+                          y = Participant.Score..1.4.)) +
+  geom_point()
+
+People_plot <- ggplot(data = People_df, 
+                      aes(x = Threshold.Score, 
+                          y = Participant.Score..1.4.)) +
+  geom_point()
+
+Trans_plot <- ggplot(data = Trans_df, 
+                     aes(x = Threshold.Score, 
+                         y = Participant.Score..1.4.)) +
+  geom_point()
+
+Water_plot <- ggplot(data = Water_df, 
+                     aes(x = Threshold.Score, 
+                         y = Participant.Score..1.4.)) +
+  geom_point()
 ##errors
