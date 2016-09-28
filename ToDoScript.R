@@ -307,3 +307,58 @@ ScoreFacet <- ggplot(data = CERIData3,
        y = "Participant Score")
 print(ScoreFacet)
 #ok it's a start!!
+
+
+#to make a spider plot/radar chart, first install the fmsb package
+install.packages('fmsb')
+#then load the library
+library(fmsb)
+
+# convert the score columns to numeric.
+
+Numeric <- transform(omit_NA,Threshold.Score = as.numeric(Threshold.Score), 
+                                        Participant.Score..1.4. = as.numeric(Participant.Score..1.4.))
+
+CERIDataNumeric <- Numeric 
+
+#create a new data frame that has the means for each score by sector
+
+library(dplyr)
+
+Sector <- group_by(CERIDataNum, Sector)
+SectorMeans <- summarize(Sector, 
+                         MeanThreshold = mean(ThresholdScore), 
+                         MeanImportance = mean(ImportanceWeight),
+                         MeanParticipant = mean(ParticipantScore))
+  
+#This worked, but then I realized that somehow each value in the Participant Score column increased by one. So I don't know what happened.I'm going to have to go back to the beginning.
+
+#I started over with just the CERIData3 dataframe. I converted the characters to factors, I got rid of the "NA" factor in a new data frame CERIData4.Then I converted the three columns to numeric.
+CERIData3$ThresholdScore <-as.factor(CERIData3$ThresholdScore)
+CERIData3$ImportanceWeight <-as.factor(CERIData3$ImportanceWeight)
+CERIData3$ParticipantScore <-as.factor(CERIData3$ParticipantScore)
+
+CERIData4 <- subset(CERIData3, ThresholdScore!= "NA")
+CERIData4 <- subset(CERIData4, ImportanceWeight!= "NA")
+CERIData4 <- subset(CERIData4, ParticipantScore!= "NA")
+  
+CERIDataNum <-transform(CERIData4, ThresholdScore = as.numeric(ThresholdScore), 
+                        ImportanceWeight = as.numeric(ImportanceWeight), 
+                        ParticipantScore = as.numeric(ParticipantScore))  
+  
+#I grouped by sector and then created a new data frame called SectorMeans which has the mean for each sector for the three score columns.
+Sector <- group_by(CERIDataNum, Sector)
+SectorMeans <- summarize(Sector, 
+                         MeanThreshold = mean(ThresholdScore), 
+                         MeanImportance = mean(ImportanceWeight),
+                         MeanParticipant = mean(ParticipantScore))
+# making a spider plot 
+install.packages('radarchart')
+library(radarchart)
+chartJSRadar(SectorMeans, width = NULL, height = NULL, 
+             maxScale = 4, scaleStepWidth = 1, scaleStartValue = 0, 
+             responsive = TRUE, labelSize = 18, addDots = TRUE, 
+             colMatrix = NULL, polyAlpha = 0.1, lineAlpha = 0.8, 
+             showToolTipLabel = FALSE)
+
+#This works! 
