@@ -355,10 +355,44 @@ SectorMeans <- summarize(Sector,
 # making a spider plot 
 install.packages('radarchart')
 library(radarchart)
-chartJSRadar(SectorMeans, width = NULL, height = NULL, 
+chartJSRadar(SectorMeans, labels=labels, width = NULL, height = NULL, 
              maxScale = 4, scaleStepWidth = 1, scaleStartValue = 0, 
              responsive = TRUE, labelSize = 18, addDots = TRUE, 
              colMatrix = NULL, polyAlpha = 0.1, lineAlpha = 0.8, 
              showToolTipLabel = FALSE)
 
 #This works! 
+
+# A spider plot for just the threshold score means
+
+library(dplyr)
+ThresholdMean <- select(SectorMeans, Sector, MeanThreshold)
+
+library(radarchart)
+chartJSRadar(ThresholdMean, labels=labels, width = NULL, height = NULL, 
+             maxScale = 4, scaleStepWidth = 1, scaleStartValue = 0, 
+             responsive = TRUE, labelSize = 18, addDots = TRUE, 
+             colMatrix = NULL, polyAlpha = 0.1, lineAlpha = 0.8, 
+             showToolTipLabel = FALSE)
+
+#A spider plot for the Participant Score means
+library(dplyr)
+ParticipantMean <- select(SectorMeans, Sector, MeanParticipant)
+
+library(radarchart)
+chartJSRadar(ParticipantMean, labels=labels, width = NULL, height = NULL, 
+             maxScale = 4, scaleStepWidth = 1, scaleStartValue = 0, 
+             responsive = TRUE, labelSize = 18, addDots = TRUE, 
+             colMatrix = NULL, polyAlpha = 0.1, lineAlpha = 0.8, 
+             showToolTipLabel = FALSE)
+
+#A spider plot for the Importance Score means
+
+ImportanceMean <- select(SectorMeans, Sector, MeanImportance)
+
+chartJSRadar(ImportanceMean, labels=labels, width = NULL, height = NULL, 
+             maxScale = 4, scaleStepWidth = 1, scaleStartValue = 0, 
+             responsive = TRUE, labelSize = 18, addDots = TRUE, 
+             colMatrix = NULL, polyAlpha = 0.1, lineAlpha = 0.8, 
+             showToolTipLabel = FALSE)
+
